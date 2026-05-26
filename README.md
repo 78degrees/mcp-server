@@ -1,37 +1,73 @@
-# QuantRisk MCP
+<div align="center">
 
-**Portfolio risk analytics as MCP tools — VaR, Monte Carlo, optimization, options Greeks, and stress testing — for AI assistants.**
+# QuantRisk
 
-→ **Project home: [quantrisk.dev](https://quantrisk.dev)**
+**Institutional-grade portfolio risk analytics for Claude and any MCP client.**
 
-[![npm version](https://img.shields.io/npm/v/@quantrisk/mcp-server)](https://www.npmjs.com/package/@quantrisk/mcp-server)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![MCP Compatible](https://img.shields.io/badge/MCP-compatible-blue)](https://modelcontextprotocol.io)
+[![npm version](https://img.shields.io/npm/v/@quantrisk/mcp-server.svg)](https://www.npmjs.com/package/@quantrisk/mcp-server)
+[![npm downloads](https://img.shields.io/npm/dm/@quantrisk/mcp-server.svg)](https://www.npmjs.com/package/@quantrisk/mcp-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![MCP Compatible](https://img.shields.io/badge/MCP-compatible-brightgreen.svg)](https://modelcontextprotocol.io)
+
+VaR / Monte Carlo / Stress Testing / Portfolio Optimization / Greeks / Correlation Matrices
+
+Real market data. Real math. Not hallucinated numbers.
+
+[Website](https://quantrisk.dev) · [Get Pro](https://quantrisk.dev/pricing) · [Documentation](https://quantrisk.dev/docs)
+
+</div>
 
 ---
 
-## What it does
+## Quick Start
 
-There are thousands of MCP servers; very few do quantitative finance. QuantRisk lets your AI assistant answer questions like *"what's my portfolio's VaR at 95%?"* with a real number instead of a definition. It exposes ten institutional-grade analytics tools over MCP — they run server-side on Cloudflare Workers and return structured JSON the model can reason about.
-
-## Install
+**1. Install**
 
 ```bash
 npm install -g @quantrisk/mcp-server
 ```
 
-Get a key at [quantrisk.dev/upgrade](https://quantrisk.dev/upgrade) (free tier available, no card required), then add to your client config.
+**2. Configure** (Claude Desktop — see [below](#configuration) for Cursor)
 
-### Claude Desktop
-
-`~/Library/Application Support/Claude/claude_desktop_config.json`:
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "quantrisk": {
-      "command": "quantrisk-mcp",
-      "env": { "QUANTRISK_API_KEY": "qr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" }
+      "command": "quantrisk-mcp-server",
+      "env": {
+        "QUANTRISK_API_KEY": "your-api-key"
+      }
+    }
+  }
+}
+```
+
+Get your free API key at [quantrisk.dev/signup](https://quantrisk.dev/signup).
+
+**3. Ask Claude**
+
+> "What's the Value at Risk on a portfolio of 60% SPY, 25% TLT, and 15% GLD?"
+
+That's it. Claude now has access to institutional-grade risk analytics.
+
+---
+
+## Configuration
+
+### Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "quantrisk": {
+      "command": "quantrisk-mcp-server",
+      "env": {
+        "QUANTRISK_API_KEY": "your-api-key"
+      }
     }
   }
 }
@@ -39,110 +75,128 @@ Get a key at [quantrisk.dev/upgrade](https://quantrisk.dev/upgrade) (free tier a
 
 ### Cursor
 
-`.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
+Add to `.cursor/mcp.json` in your project root:
 
 ```json
 {
   "mcpServers": {
     "quantrisk": {
-      "command": "quantrisk-mcp",
-      "env": { "QUANTRISK_API_KEY": "qr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" }
+      "command": "quantrisk-mcp-server",
+      "env": {
+        "QUANTRISK_API_KEY": "your-api-key"
+      }
     }
   }
 }
 ```
 
-### Direct HTTP (Streamable)
+### Any MCP Client
 
-If your client speaks Streamable HTTP, point it at the hosted endpoint:
+QuantRisk works with any client that supports the [Model Context Protocol](https://modelcontextprotocol.io). Point it at the `quantrisk-mcp-server` binary with your API key in the environment.
 
-```json
-{
-  "mcpServers": {
-    "quantrisk": {
-      "transport": "http",
-      "url": "https://quantrisk-mcp.quantrisk.workers.dev/mcp",
-      "headers": { "Authorization": "Bearer qr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" }
-    }
-  }
-}
-```
+---
 
 ## Tools
 
-| Tool | Purpose | Tier |
-|------|---------|------|
-| `analyze_risk` | VaR (historical / parametric / Cornish-Fisher), CVaR, volatility, beta, max drawdown | Free |
-| `monte_carlo_simulation` | Distribution of future returns across simulated paths | Free |
-| `stress_test` | P&L under GFC 2008, COVID 2020, dot-com bust, etc. | Free |
-| `correlation_matrix` | Pairwise correlations + eigenvalue decomposition | Free |
-| `performance_attribution` | Sharpe, Sortino, Treynor, Calmar, Information ratio | Free |
-| `sector_exposure` | GICS sector + market-cap concentration (HHI) | Free |
-| `price_history` | Historical OHLCV for one or more tickers | Free |
-| `optimize_portfolio` | Mean-variance optimization (max Sharpe / min variance / target return) | Pro |
-| `compare_portfolios` | Head-to-head risk/return comparison of 2–5 allocations | Pro |
-| `calculate_greeks` | Delta, gamma, theta, vega, rho for options portfolios | Pro |
+| Tool | Description | Tier |
+|------|-------------|------|
+| `analyze_risk` | VaR, CVaR, volatility, Sharpe ratio, max drawdown | Free |
+| `monte_carlo_simulation` | Forward-looking return simulations with configurable paths | Free |
+| `stress_test` | Portfolio impact under historical and hypothetical scenarios | Free |
+| `price_history` | Historical price and return data for any supported ticker | Free |
+| `sector_exposure` | Sector and industry breakdown across holdings | Free |
+| `performance_attribution` | Return attribution by asset, sector, and factor | Free |
+| `correlation_matrix` | Cross-asset correlation analysis | Free |
+| `optimize_portfolio` | Mean-variance and risk-parity optimization | **Pro** |
+| `compare_portfolios` | Side-by-side risk/return comparison of multiple portfolios | **Pro** |
+| `calculate_greeks` | Options Greeks — delta, gamma, theta, vega, rho | **Pro** |
 
-## Pricing
+---
+
+## Example Queries
+
+Once configured, ask Claude questions like these:
+
+- **"Run a Monte Carlo simulation on my portfolio: 50% AAPL, 30% MSFT, 20% NVDA. Show me the 5th percentile outcome."**
+- **"Stress test 70% VTI / 30% BND against the 2008 financial crisis and a hypothetical 300bp rate shock."**
+- **"What's my sector exposure if I hold equal weights in AMZN, JPM, JNJ, XOM, and NEE?"**
+- **"Show me the correlation matrix for SPY, GLD, TLT, and BTC-USD over the last 2 years."**
+- **"Compare the risk-adjusted returns of a 60/40 portfolio vs. an all-weather portfolio."** *(Pro)*
+- **"Calculate the Greeks for a SPY 550 call expiring in 30 days."** *(Pro)*
+
+---
+
+## Why Pro?
+
+The free tier covers core risk analytics for small portfolios. Pro unlocks the tools and scale that serious analysis demands.
 
 | | Free | Pro ($29/mo) |
 |---|---|---|
-| Positions per call | 20 | 500 |
-| Monte Carlo paths | 1,000 | 100,000 |
-| Price history | 1 ticker × 1 yr | 20 tickers × 5 yr |
-| Calls / day | 100 | 5,000 |
-| Tools | 7 | 10 |
+| **Positions** | 20 | 500 |
+| **API calls** | 50/day | Unlimited |
+| **Tools** | 7 | All 10 |
+| **Monte Carlo paths** | 1,000 | 100,000 |
+| **Portfolio optimization** | — | Mean-variance, risk-parity, min-volatility |
+| **Portfolio comparison** | — | Side-by-side multi-portfolio analysis |
+| **Options Greeks** | — | Full Greeks surface |
 
-[Subscribe at quantrisk.dev/upgrade](https://quantrisk.dev/upgrade) — cancel any time.
+**What that means in practice:**
 
-## Architecture
+- Free: "What's the VaR on my 10-stock portfolio?" — works great.
+- Pro: "Optimize my 200-position portfolio for maximum Sharpe, then stress test it against 5 scenarios and compare it to my current allocation." — you need Pro for that.
 
-Two pieces ship from this repo:
+[Upgrade to Pro](https://quantrisk.dev/pricing)
 
-1. **`bin/quantrisk-mcp.js`** — a stdio ⇄ Streamable-HTTP bridge installed via `npm install -g`. It reads JSON-RPC from stdin, forwards each message to the hosted server with the user's API key, and writes responses back. This is what Claude Desktop / Cursor talk to.
+---
 
-2. **`src/`** — the Cloudflare Worker that handles the actual MCP protocol, runs the analytics engine, and gates by tier. State lives in a Durable Object (`UserState`) per API key. Stripe handles billing; webhooks promote/demote tiers.
+## How It Works
 
-The math is in `src/engine/` — pure TypeScript, no external dependencies, fully unit-tested.
+```
+Claude / MCP Client
+      |
+  MCP Protocol
+      |
+QuantRisk MCP Server (local process)
+      |
+QuantRisk API (Cloudflare Workers)
+      |
+Yahoo Finance (market data) + risk engine (math)
+```
 
-## Self-hosting
+- **MCP Server** runs locally as a stdio process — your API key never leaves your machine except to authenticate with the QuantRisk API.
+- **Risk Engine** runs on Cloudflare Workers. All calculations — VaR, Monte Carlo, optimization — happen server-side with real math on real market data.
+- **Market Data** sourced from Yahoo Finance. Prices, fundamentals, and options chains are fetched in real time.
+- **Reports** generated with pdf-lib when applicable.
 
-You can run your own instance on Cloudflare Workers:
+No data is stored. No portfolio information is retained after a request completes.
+
+---
+
+## Contributing
+
+Contributions are welcome. Please open an issue first to discuss what you'd like to change.
 
 ```bash
-git clone https://github.com/QuantRisk/mcp-server.git
+git clone https://github.com/78degrees/mcp-server.git
 cd mcp-server
 npm install
-cp .env.example .env   # fill in STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SECRET
-npx wrangler kv namespace create PRICE_CACHE
-# put the returned id into wrangler.toml
-echo "<sk_...>"   | npx wrangler secret put STRIPE_SECRET_KEY
-echo "<whsec_...>" | npx wrangler secret put STRIPE_WEBHOOK_SECRET
-npx wrangler deploy
+npm test
 ```
 
-You'll need:
-- A Cloudflare account (free tier works for low traffic)
-- A Stripe account if you want paid-tier gating; you can rip out the tier middleware for a no-auth fork
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## Development
-
-```bash
-npm install
-npm test            # full vitest suite
-npm run test:watch  # watch mode
-npm run dev         # `wrangler dev` — local Worker on :8787
-npm run typecheck   # tsc --noEmit
-npm run build       # compile src/ → dist/ (used by npm publish)
-```
-
-The engine layer (`src/engine/`) is the highest-leverage place to contribute — it's pure math, has near-100% test coverage, and every formula carries a comment with the source paper.
-
-**Before opening a PR:**
-- Engine functions need tests in `test/engine/`
-- New external dependencies need a one-line justification in the PR description
-- Tool input/output shapes are frozen — schema changes require a version bump
+---
 
 ## License
 
-MIT — see [LICENSE](LICENSE). The hosted service at `quantrisk.dev` is a separate commercial offering; this license covers the source code, not access to the API.
+[MIT](LICENSE)
+
+---
+
+<div align="center">
+
+Built by the team at [quantrisk.dev](https://quantrisk.dev)
+
+Contact: hello@quantrisk.dev
+
+</div>
